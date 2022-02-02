@@ -1,0 +1,43 @@
+<ion-header>
+    <ion-toolbar text-center>
+        <ion-title>Job Comments</ion-title>
+        <ion-icon name="close" (click)="closeModal()" size="large"></ion-icon>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content padding *ngIf="comments.length > 0">
+    <div [attr.data-position]="(user_id == comment['userid']) ? 'right': 'left'"
+         *ngFor="let comment of comments;">
+        <div class="message-container">
+            <div id="{{comment['modcommentsid']}}" class="message-bubble ion-padding">
+                <div class="ion-text-left" [innerHTML]="comment['commentcontent']"></div>
+            </div>
+        </div>
+        <div class="comment-bottom">
+            <ion-label color="dark" position="stacked" class="comment-sent">
+                {{comment['createdtime']}}
+                <br>
+                {{comment['username']}}
+            </ion-label>
+        </div>
+    </div>
+</ion-content>
+
+<ion-content class="ion-padding" *ngIf="comments.length == 0">
+    <p class="ion-padding">No messages</p>
+</ion-content>
+
+<div class="button-grouping anchor-bottom ion-padding-horizontal">
+    <ion-grid class="ion-no-padding">
+        <ion-row class="ion-align-items-center ion-justify-content-center">
+            <ion-col class="padding-left-none" size="9">
+                <ion-textarea color="dark" name="newComment" [(ngModel)]="newComment" placeholder="Write a message"></ion-textarea>
+            </ion-col>
+            <ion-col size="3">
+                <ion-button size="large" expand="block" color="tertiary" (click)="sendMessage()">
+                    <ion-icon name="send"></ion-icon>
+                </ion-button>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+</div>

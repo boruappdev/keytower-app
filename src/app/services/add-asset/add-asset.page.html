@@ -1,0 +1,69 @@
+<ion-header>
+    <ion-toolbar text-center>
+        <ion-title>Add Asset</ion-title>
+        <ion-icon name="close" (click)="closeModal()" size="large" style="float: right;"></ion-icon>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+    <ion-card *ngIf="mode == 'Add' ">
+        <ion-item>
+            <ion-label position="stacked">Serial Number</ion-label>
+            <ion-input type="text"
+                       name="serialnumber"
+                       value="{{barcodevalue}}" [(ngModel)]="serialnumber"
+                       (ionChange)="searchStartAsset($event)"
+                       width="100%"></ion-input>
+        </ion-item>
+
+        <div class="button-grouping ion-padding">
+            <ion-button *ngIf="!manuallySearch"
+                        (click)="scanAssetBarcode()"
+                        expand="block" color="primary">
+                <ion-text>Scan Asset</ion-text>
+            </ion-button>
+            <ion-button *ngIf="manuallySearch"
+                        (click)="searchAsset()"
+                        expand="block" color="primary">
+                <ion-text>Search Asset</ion-text>
+            </ion-button>
+        </div>
+    </ion-card>
+
+    <ion-card [style.display]="barcodeCheckValueExits ? '': 'none'">
+        <ion-item>
+            <ion-label position="stacked">Asset Name</ion-label>
+            <ion-input type="text" value="{{barcodeAsset.assetname}}" [(ngModel)]="assetname" id="assetname" width="100%" [disabled]="(mode == 'Edit' || barcodeAsset.assetname) ? 'true' : 'false' "></ion-input>
+        </ion-item>
+        <ion-item>
+            <ion-label position="stacked">Location <span style="color:red;">*</span></ion-label>
+            <ion-select value="{{barcodeAsset.cf_asset_location}}" okText="Select" [(ngModel)]="location" id="location" cancelText="Dismiss" [disabled]="(mode != 'Edit' && barcodeAsset.cf_asset_location) ? 'true' : 'false' ">
+                <ion-select-option value="Warehouse1">Warehouse1</ion-select-option>
+                <ion-select-option value="Warehouse2">Warehouse2</ion-select-option>
+                <ion-select-option value="Job Site">Job Site</ion-select-option>
+            </ion-select>
+        </ion-item>
+        <ion-item>
+            <ion-label position="stacked">Asset Status</ion-label>
+            <ion-select value="{{barcodeAsset.assetstatus}}" okText="Select" [(ngModel)]="assetstatus" id="assetstatus" cancelText="Dismiss" [disabled]="(mode == 'Edit' || barcodeAsset.assetstatus) ? 'true' : 'false' ">
+                <ion-select-option value="In Service">In Service</ion-select-option>
+                <ion-select-option value="Out-of-service">Out-of-service</ion-select-option>
+            </ion-select>
+        </ion-item>
+        <ion-item>
+            <ion-label position="stacked">Date In Service</ion-label>
+            <ion-datetime value="{{barcodeAsset.dateinservice}}" [(ngModel)]="dateinservice" id="dateinservice" [disabled]="(mode == 'Edit' || barcodeAsset.dateinservice) ? 'true' : 'false' "></ion-datetime>
+        </ion-item>
+        <ion-item>
+            <ion-label position="stacked">Date Sold</ion-label>
+            <ion-datetime value="{{barcodeAsset.datesold}}" [(ngModel)]="datesold" id="datesold" [disabled]="(mode == 'Edit' || barcodeAsset.datesold) ? 'true' : 'false' "></ion-datetime>
+        </ion-item>
+
+        <div class="button-grouping ion-padding">
+            <ion-button (click)="addAssetInSO()"
+                        expand="block" color="primary">
+                <ion-text>Add Asset</ion-text>
+            </ion-button>
+        </div>
+    </ion-card>
+</ion-content>

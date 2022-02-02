@@ -1,0 +1,28 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./out-tsc/app",
+    "types": []
+  },
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "src/test.ts",
+    "src/**/*.spec.ts"
+  ],
+  "proxies": [
+    {
+      "path": "/keytower71/*",
+      "proxyUrl": "http://devl06.borugroup.com"
+    },
+    {
+      "path": "/keytower/*",
+      "proxyUrl": "http://localhost"
+    },
+    {
+      "path": "/*",
+      "proxyUrl": "http://192.241.134.167"
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "appId": "io.ionic.starter",
+  "appName": "Key Tower",
+  "bundledWebRuntime": false,
+  "npmClient": "npm",
+  "webDir": "www",
+  "cordova": {
+    "preferences": {
+      "target-device": "handset",
+      "ScrollEnabled": "false",
+      "android-minSdkVersion": "19",
+      "BackupWebStorage": "none",
+      "SplashMaintainAspectRatio": "true",
+      "FadeSplashScreenDuration": "300",
+      "SplashShowOnlyFirstTime": "false",
+      "SplashScreen": "screen",
+      "SplashScreenDelay": "3000",
+      "WKWebViewOnly": "true",
+      "GOOGLE_MAPS_ANDROID_API_KEY": "AIzaSyDmZNVDUxBxJvBByQcLZ4fOkOfgbCGaogA",
+      "GOOGLE_MAPS_IOS_API_KEY": "AIzaSyDmZNVDUxBxJvBByQcLZ4fOkOfgbCGaogA"
+    }
+  },
+  "server": {
+    "url": "http://192.168.0.107:8100"
+  }
+}

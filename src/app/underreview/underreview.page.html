@@ -1,0 +1,33 @@
+<ion-header>
+  <ion-toolbar text-center>
+        <ion-title>Under Review</ion-title>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <ion-list lines="full">
+        <div *ngIf="count_underreview > 0">
+        <ion-item (click)="goToDetail(service.workorderid,service.activityid)" detail *ngFor="let service of underreview">
+            <ion-avatar><ion-icon color="warning" size="large" name="alert"></ion-icon></ion-avatar>
+            <ion-label>
+              <h2>{{service[0]}}</h2>
+              <h2>{{service.towersites}}</h2>
+              <p>{{service.longdate}}</p>
+              <div class="service-details-div">
+                <ion-grid class="service-details-grid">
+                  <ion-row>
+                    <ion-col><p class="comment">{{service.comment}}</p></ion-col>
+                  </ion-row>
+                </ion-grid>
+              </div>
+            </ion-label>
+            <ion-badge slot="end" class="status" color="medium"
+                       data-color="{'success'}}"
+                       [ngStyle]="{'background-color': 'var(--ion-color-success)' }"        >
+                <ion-text class="status-text">{{service.activitytype}}</ion-text>
+            </ion-badge>
+          </ion-item>
+        </div>
+          <p class="ion-padding" *ngIf="count_underreview == 0">No Jobs available for this section</p>
+    </ion-list>
+</ion-content>

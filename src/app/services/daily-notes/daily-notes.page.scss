@@ -1,0 +1,54 @@
+ion-card-content {
+  padding-top: 10px !important;
+}
+
+ion-input input.native-input {
+  border: 1px solid #ccc !important;
+  padding-left: 20px !important;
+  padding-right: 20px !important;
+}
+
+ion-toolbar ion-icon[name="close"] {
+  float: right;
+  cursor: pointer;
+}
+
+.section {
+  //display: none !important;
+  visibility: hidden !important;
+  opacity: 0;
+  height: 0px;
+  margin-top: 16px;
+  margin-bottom: 0px;
+}
+
+.section-active {
+  visibility: visible;
+  opacity: 1;
+  height: max-content;
+  max-height: auto;
+  margin-top: 16px;
+  margin-bottom: 16px;
+
+  ion-label{
+    font-size: 18px;
+  }
+}
+
+.dropdown-arrow {
+  background: #2759B3;
+  color: #ffffff;
+  width: 100%;
+  padding: 0.5em;
+  border-radius: 5px;
+  font-size: 18px;
+}
+
+.checklist-thumb{
+  font-size: 3rem;
+  width: 55px;
+  height: 75px;
+  img{
+    border-radius: 5px;
+  }
+}

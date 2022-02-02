@@ -1,0 +1,67 @@
+<ion-header>
+    <ion-toolbar text-center>
+        <ion-title>Add Item</ion-title>
+        <ion-icon name="close" (click)="closeModal()" size="large" style="float: right;"></ion-icon>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+    <ion-card>
+        <ion-item>
+            <ion-label position="stacked">Product</ion-label>
+            <ion-input type="text"
+                       name="item_number"
+                       [(ngModel)]="barcodevalue"
+                       (ionChange)="searchStartItem($event)"
+                       width="100%"></ion-input>
+        </ion-item>
+
+        <div class="button-grouping ion-padding">
+            <ion-button *ngIf="manuallySearch"
+                        (click)="searchItem()"
+                        expand="block" color="primary">
+                <ion-text>Search for Item</ion-text>
+            </ion-button>
+            <ion-button *ngIf="!manuallySearch"
+                        (click)="scanItemBarcode()"
+                        expand="block" color="primary">
+                <ion-text>Scan Item</ion-text>
+            </ion-button>
+        </div>
+    </ion-card>
+
+    <ion-card [style.display]="barcodeCheckValueExits ? '': 'none'">
+        <ion-item>
+            <ion-label position="stacked">Item Name</ion-label>
+            <ion-input type="text"
+                       value="{{barcodeProduct.productname}}"
+                       [(ngModel)]="productname" width="100%"
+                       [disabled]="(barcodeProduct.productname) ? 'true' : 'false' ">
+            </ion-input>
+        </ion-item>
+        <ion-item>
+            <ion-label position="stacked">Part Number</ion-label>
+            <ion-input type="text"
+                       value="{{barcodeProduct.productcode}}"
+                       [(ngModel)]="productcode"
+                       width="100%"
+                       [disabled]="(barcodeProduct.productcode) ? 'true' : 'false' "
+            ></ion-input>
+        </ion-item>
+        <ion-item>
+            <ion-label position="stacked">Quantity</ion-label>
+            <ion-input type="number"
+                       min = '1'
+                       value="{{barcodeProduct.quantity}}"
+                       [(ngModel)]="quantity"
+                       (ionChange)="changeField($event,'quantity')"
+                       width="100%"></ion-input>
+        </ion-item>
+        <div class="button-grouping ion-padding">
+            <ion-button (click)="addItemInSO()"
+                        expand="block" color="primary">
+                <ion-text>Add Item</ion-text>
+            </ion-button>
+        </div>
+    </ion-card>
+</ion-content>

@@ -1,0 +1,487 @@
+<!---->
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button type="submit" defaultHref="/tabs/services" text="Back"
+                             (click)="saveWO(workorderdetail.workorderid)"></ion-back-button>
+        </ion-buttons>
+        <ion-title style="padding-right: 100px;">{{serviceName}}</ion-title>
+        <ion-buttons slot="primary">
+            <ion-button type="button" text="View Photos" (click)="goToGallery(workorderdetail.workorderid)">
+                View Photos
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <form #form="ngForm" (ngSubmit)="saveWO(workorderdetail.workorderid)">
+        <ion-list>
+            <!--read only fields-->
+            <div class="readonly-fields">
+                <ion-row>
+                    <ion-col size="6">
+                        <div style="padding:5px;">
+                            <ion-label class="label-text" position="stacked">Job Name</ion-label>
+                        </div>
+                        <div style="padding:5px;">
+                            <ion-text class="value-text">{{serviceName}}</ion-text>
+                        </div>
+                    </ion-col>
+                    <ion-col size="6">
+                        <div style="padding:5px;">
+                            <ion-label class="label-text" position="stacked">Company</ion-label>
+                        </div>
+                        <div style="padding:5px;">
+                            <ion-text class="value-text">{{workorderdetail.organization_name}}</ion-text>
+                        </div>
+                    </ion-col>
+                    <ion-col size="6">
+                        <div style="padding:5px;">
+                            <ion-label class="label-text" position="stacked">Address Details</ion-label>
+                        </div>
+                        <div style="padding-left:5px;">
+                            <ion-text *ngIf="workorderdetail.bill_street"
+                                      class="value-text">{{workorderdetail.bill_street}}</ion-text>
+                        </div>
+                        <div style="padding-left:5px;">
+                            <ion-text *ngIf="workorderdetail.bill_pobox"
+                                      class="value-text">{{workorderdetail.bill_pobox}}</ion-text>
+                        </div>
+                        <div style="padding:0px 0px 15px 5px;">
+                            <ion-text class="value-text">{{workorderdetail.bill_city}}
+                                , {{workorderdetail.bill_state}} {{workorderdetail.bill_code}}</ion-text>
+                        </div>
+                    </ion-col>
+                    <ion-col size="6" style="top:20px;">
+                        <div style="padding:0px 0px 15px 5px;">
+                            <ion-button target="_blank" color="secondary"
+                                        href="https://maps.apple.com/?daddr={{workorderdetail.bill_street}}, {{workorderdetail.bill_city}}, {{workorderdetail.bill_state}} {{workorderdetail.bill_code}}"
+                                        size="default" slot="end" type="button">
+                                <ion-icon name="navigate" size="large"></ion-icon>
+                            </ion-button>
+                        </div>
+                    </ion-col>
+                </ion-row>
+            </div>
+
+            <!--Event Block fields-->
+            <ion-item-group *ngFor="let blockservice of servicedetail">
+                <div *ngIf="blockservice.blockname != 'Array Information'">
+                    <ion-item class="blockheader_2" lines="none">
+                        <ion-label style="font-size: 19px;" class="ion-padding blockheader"
+                                   (click)="toggleSection(blockservice.blockname)">
+                            {{blockservice.blockname == 'COP' ? 'COP Photos' : blockservice.blockname}}
+                        </ion-label>
+                        <svg *ngIf="!blockGroups[blockservice.blockname].open"
+                             style="margin-left: auto;float: right;" slot="end" xmlns="http://www.w3.org/2000/svg"
+                             width="20" height="20" fill="currentColor" class="bi bi-chevron-right"
+                             viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                  d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+                        </svg>
+                        <svg *ngIf="blockGroups[blockservice.blockname].open"
+                             style="margin-left: auto;float: right;" xmlns="http://www.w3.org/2000/svg" width="20"
+                             height="20" fill="currentColor" class="bi bi-chevron-down" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                  d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+                        </svg>
+                    </ion-item>
+                    <div [ngClass]="{'section-active': blockGroups[blockservice.blockname].open, 'section': !blockGroups[blockservice.blockname].open}">
+                        <ion-item detail="false" *ngFor="let service of blockservice.fields;" lines="none">
+
+                            <ion-label class="ft-18" position="stacked">{{service.fieldlabel}}</ion-label>
+                            <div [ngSwitch]="service.uitype" style="font-size: 14px;padding: 10px;">
+                                <!--uitype = 10-->
+                                <ion-text *ngSwitchCase="10">{{service.value}} </ion-text>
+
+                                <!--uitype = 56-->
+                                <div *ngSwitchCase="56">
+                                    <ion-checkbox (ionChange)="addUpdate($event)" *ngIf="service.value == 1"
+                                                  checked="true"
+                                                  name="{{service.columnname}}">{{service.value}} </ion-checkbox>
+                                    <ion-checkbox (ionChange)="addUpdate($event)" *ngIf="service.value != 1"
+                                                  name="{{service.columnname}}">{{service.value}} </ion-checkbox>
+                                </div>
+
+                                <!--uitype = 15.16-->
+                                <ion-select (ionChange)="addUpdate($event)" *ngSwitchCase="16"
+                                            name="{{service.columnname}}" value="{{service.value}}">
+                                    <ion-select-option
+                                            *ngFor="let picklist of service.picklist">{{picklist}}</ion-select-option>
+                                </ion-select>
+
+                                <ion-select (ionChange)="addUpdate($event)" *ngSwitchCase="15"
+                                            name="{{service.columnname}}" value="{{service.value}}">
+                                    <ion-select-option
+                                            *ngFor="let picklist of service.picklist">{{picklist}}</ion-select-option>
+                                </ion-select>
+
+                                <!--uitype = 33-->
+                                <ion-select (ionChange)="addUpdate($event)" *ngSwitchCase="33" multiple="true"
+                                            placeholder="Select One">
+                                    <ion-select-option
+                                            *ngFor="let picklist of service.picklist">{{picklist}}</ion-select-option>
+                                </ion-select>
+
+                                <!-- uitype = 7 -->
+                                <ion-input (ionBlur)="addUpdate($event)" *ngSwitchCase="7" type="number"
+                                           name="{{service.columnname}}" value="{{service.value | number}}"></ion-input>
+
+                                <!-- uitype = 9 -->
+                                <ion-input (ionBlur)="addUpdate($event)" *ngSwitchCase="9" type="text"
+                                           name="{{service.columnname}}" value="{{service.value | number}}"
+                                           width="100%"></ion-input>
+                                <!--else-->
+                                <ion-input (ionBlur)="addUpdate($event)" type="text" name="{{service.columnname}}"
+                                           *ngSwitchDefault value="{{service.value}}"></ion-input>
+
+                                <!--uitype = 19.20-->
+                                <ion-textarea (ionBlur)="addUpdate($event)" auto-grow="true"
+                                              name="{{service.columnname}}"
+                                              rows="3" *ngSwitchCase="19" value="{{service.value}}"
+                                              width="100%"></ion-textarea>
+                                <ion-textarea (ionBlur)="addUpdate($event)" auto-grow="true"
+                                              name="{{service.columnname}}"
+                                              rows="3" *ngSwitchCase="20" value="{{service.value}}"
+                                              width="100%"></ion-textarea>
+
+                                <div *ngSwitchCase="21">
+
+                                    <ion-grid *ngIf="service.json">
+                                        <ion-row>
+                                            <ion-col
+                                                    style="text-align: center;align-items: center!important;display: flex;justify-content:center !important;">
+                                                <ion-text
+                                                        [ngClass]="{'green-text' : completedFields[service.columnname] === true}">
+                                                    {{appConst.workOrder[serviceid][service.columnname]['image_count']}}
+                                                    Photos Added
+                                                    <div *ngIf="completedFields[service.columnname] === true"
+                                                         class="green-text">Section Completed
+                                                    </div>
+                                                </ion-text>
+                                            </ion-col>
+
+                                            <ion-col>
+                                                <div class="photo-icon">
+                                                    <ion-icon name="camera"
+                                                              (click)="openChecklist(workorderdetail.workorderid,inspection_type, service.default, service.value,service.fieldlabel, service.columnname)"></ion-icon>
+                                                </div>
+                                            </ion-col>
+                                        </ion-row>
+                                    </ion-grid>
+
+                                    <ion-textarea *ngIf="!service.json" (ionBlur)="addUpdate($event)" auto-grow="true"
+                                                  name="{{service.columnname}}" rows="3" value="{{service.value}}"
+                                                  width="100%"></ion-textarea>
+                                </div>
+
+                            </div>
+                        </ion-item>
+                    </div>
+                </div>
+            </ion-item-group>
+
+            <!-- Construction Documents Section-->
+            <ion-item-group>
+                <div>
+                    <ion-item class="blockheader_2" lines="none">
+                        <ion-label style="font-size: 19px;" class="ion-padding blockheader"
+                                   (click)="toggleSection('Construction Documents')">Construction Documents
+                        </ion-label>
+
+                        <svg *ngIf="!blockGroups['Construction Documents'].open" style="margin-left: auto;float: right;"
+                             slot="end" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                             class="bi bi-chevron-right" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                  d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+                        </svg>
+                        <svg *ngIf="blockGroups['Construction Documents'].open" style="margin-left: auto;float: right;"
+                             xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                             class="bi bi-chevron-down" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                  d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+                        </svg>
+                    </ion-item>
+                    <div [ngClass]="{'section-active': blockGroups['Construction Documents'].open, 'section': !blockGroups['Construction Documents'].open}">
+                        <ion-item *ngFor="let conDoc of constructionDocuments" style="padding: 0px 10px;">
+                            <ion-label>{{conDoc.title}}</ion-label>
+                            <ion-thumbnail *ngIf="conDoc.doctype != 'application/pdf'"
+                                           (click)="openConDocViewModal(conDoc,'')" class="checklist-thumb"><img
+                                    src="{{this.apiurl.replace('phoneapi/','')}}{{conDoc.imgpath}}"></ion-thumbnail>
+                            <ion-thumbnail *ngIf="conDoc.doctype == 'application/pdf'"
+                                           (click)="openConDocViewPDF(conDoc)" class="checklist-thumb">
+                                <ion-icon name="document"></ion-icon>
+                            </ion-thumbnail>
+                        </ion-item>
+                    </div>
+                </div>
+            </ion-item-group>
+
+            <!-- Scope of Work Section-->
+            <ion-item-group>
+                <div>
+                    <ion-item class="blockheader_2" lines="none">
+                        <ion-label style="font-size: 19px;" class="ion-padding blockheader"
+                                   (click)="toggleSection('Scope of Work')">Scope of Work
+                        </ion-label>
+
+                        <svg *ngIf="!blockGroups['Scope of Work'].open" style="margin-left: auto;float: right;"
+                             slot="end" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                             class="bi bi-chevron-right" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                  d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+                        </svg>
+                        <svg *ngIf="blockGroups['Scope of Work'].open" style="margin-left: auto;float: right;"
+                             xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                             class="bi bi-chevron-down" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                  d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+                        </svg>
+                    </ion-item>
+                    <div [ngClass]="{'section-active': blockGroups['Scope of Work'].open, 'section': !blockGroups['Scope of Work'].open}">
+                        <ion-item *ngFor="let activity of ScopeofWorkActivity" style="padding: 0px 10px;"
+                                  id="{{activity.activityid}}">
+                            <div style="width: 100%;">
+                                <ion-label style="font-size: 19px;white-space: inherit;"
+                                           class="">{{activity.subject}}</ion-label>
+                            </div>
+                            <div style="width: 110px !important; float: right; padding-bottom: 0.7em;">
+                                <div class="button-grouping">
+                                    <ion-button (click)="ScopeofWorkstatus(activity.activityid, 'Accept')"
+                                                expand="block" color="primary">Complete
+                                    </ion-button>
+                                </div>
+                                <div class="button-grouping">
+                                    <ion-button (click)="ScopeofWorkstatus(activity.activityid, 'Delay')"
+                                                expand="block" color="danger">Delay
+                                    </ion-button>
+                                </div>
+                            </div>
+                        </ion-item>
+                    </div>
+                </div>
+            </ion-item-group>
+
+            <!-- JSA Section-->
+            <ion-item-group>
+                <div>
+                    <ion-item class="blockheader_2" lines="none">
+                        <ion-label style="font-size: 19px;" class="ion-padding blockheader"
+                                   (click)="toggleSection('JSA')">JSA
+                        </ion-label>
+                        <svg *ngIf="!blockGroups['JSA'].open" style="margin-left: auto;float: right;" slot="end"
+                             xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                             class="bi bi-chevron-right" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                  d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+                        </svg>
+                        <svg *ngIf="blockGroups['JSA'].open" style="margin-left: auto;float: right;"
+                             xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                             class="bi bi-chevron-down" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                  d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+                        </svg>
+                    </ion-item>
+                    <div [ngClass]="{'section-active': blockGroups['JSA'].open, 'section': !blockGroups['JSA'].open}">
+                        <ion-row>
+                            <ion-col *ngFor="let jsaDoc of jsaDocuments" class="col-6 col-md-4 col-xl-3"
+                                     style="text-align: center;">
+                                <ion-thumbnail *ngIf="jsaDoc.documentid != ''" class="checklist-thumb"
+                                               (click)="openConDocViewModal(jsaDoc,'')"><img
+                                        src="{{this.apiurl.replace('phoneapi/','')}}{{jsaDoc.imgpath}}?{{randomNumber}}">
+                                </ion-thumbnail>
+                                <ion-button *ngIf="jsaDoc.documentid == ''"
+                                            (click)="openActionSheet('jsaDoc',{'jsdoc_num':jsaDoc.jsdoc_num})"
+                                            style="max-width: 75px;height: 40px;" type="button" class="add-image"
+                                            color="secondary">
+                                    <ion-icon style="padding: 0px;" size="large" name="add"></ion-icon>
+                                    <ion-icon style="padding: 0px;" size="large" name="camera"></ion-icon>
+                                </ion-button>
+                                <ion-label style="text-align: center;">{{jsaDoc.label}}</ion-label>
+                            </ion-col>
+                        </ion-row>
+                    </div>
+                </div>
+            </ion-item-group>
+
+            <!-- Items Section-->
+            <ion-item-group>
+                <div>
+                    <ion-item class="blockheader_2" lines="none">
+                        <ion-label style="font-size: 19px;" class="ion-padding blockheader"
+                                   (click)="toggleSection('Items')">Items
+                        </ion-label>
+                        <svg *ngIf="!blockGroups['Items'].open" style="margin-left: auto;float: right;" slot="end"
+                             xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                             class="bi bi-chevron-right" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                  d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+                        </svg>
+                        <svg *ngIf="blockGroups['Items'].open" style="margin-left: auto;float: right;"
+                             xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                             class="bi bi-chevron-down" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                  d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+                        </svg>
+                    </ion-item>
+                    <div [ngClass]="{'section-active': blockGroups['Items'].open, 'section': !blockGroups['Items'].open}">
+                        <ion-row>
+                            <ion-col size="6">
+                                <ion-button (click)="addItem(workorderdetail.workorderid)" expand="block"
+                                            size="3" color="secondary">Add Item
+                                </ion-button>
+                            </ion-col>
+                        </ion-row>
+                        <ion-grid *ngIf="jobItems.length > 0">
+                            <ion-row class="table-header">
+                                <ion-col>
+                                    Product Name
+                                </ion-col>
+                                <ion-col>
+                                    Part Number
+                                </ion-col>
+                                <ion-col>
+                                    Quantity
+                                </ion-col>
+                            </ion-row>
+                            <ion-row class="table-row" *ngFor="let item of jobItems">
+                                <ion-col>{{item['productname']}}</ion-col>
+                                <ion-col>{{item['productcode']}}</ion-col>
+                                <ion-col>{{item['quantity']}}</ion-col>
+                            </ion-row>
+                        </ion-grid>
+                        <ion-grid *ngIf="jobItems.length == 0" style="text-align: center;">
+                            <ion-text>No Item in this Job</ion-text>
+                        </ion-grid>
+                    </div>
+                </div>
+            </ion-item-group>
+
+            <!-- Assets Section-->
+            <ion-item-group>
+                <div>
+                    <ion-item class="blockheader_2" lines="none">
+                        <ion-label style="font-size: 19px;" class="ion-padding blockheader"
+                                   (click)="toggleSection('Assets')">Assets
+                        </ion-label>
+                        <svg *ngIf="!blockGroups['Assets'].open" style="margin-left: auto;float: right;" slot="end"
+                             xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                             class="bi bi-chevron-right" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                  d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+                        </svg>
+                        <svg *ngIf="blockGroups['Assets'].open" style="margin-left: auto;float: right;"
+                             xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                             class="bi bi-chevron-down" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                  d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+                        </svg>
+                    </ion-item>
+                    <div [ngClass]="{'section-active': blockGroups['Assets'].open, 'section': !blockGroups['Assets'].open}">
+                        <ion-row>
+                            <ion-col size="6">
+                                <ion-button (click)="addAsset(workorderdetail.workorderid)" expand="block"
+                                            size="3" color="secondary">Add Asset
+                                </ion-button>
+                            </ion-col>
+                        </ion-row>
+                        <ion-grid *ngIf="jobAssets.length > 0">
+                            <ion-row class="table-header">
+                                <ion-col>
+                                    Asset Name
+                                </ion-col>
+                                <ion-col>
+                                    Serial Number
+                                </ion-col>
+                                <ion-col>
+                                    Asset Location
+                                </ion-col>
+                            </ion-row>
+                            <ion-row class="table-row" (click)="addAsset(workorderdetail.workorderid,asset,'Edit')" *ngFor="let asset of jobAssets">
+                                <ion-col>{{asset['assetname']}}</ion-col>
+                                <ion-col>{{asset['serialnumber']}}</ion-col>
+                                <ion-col>{{asset['cf_asset_location']}}</ion-col>
+                            </ion-row>
+                        </ion-grid>
+                        <ion-grid *ngIf="jobAssets.length == 0" style="text-align: center;">
+                            <ion-text>No Asset related to this Job</ion-text>
+                        </ion-grid>
+                    </div>
+                </div>
+            </ion-item-group>
+
+            <!-- Comments Section-->
+            <ion-item-group>
+                <div>
+                    <ion-item class="blockheader_2" lines="none">
+                        <ion-label style="font-size: 19px;" class="ion-padding blockheader"
+                                   (click)="toggleSection('Comments')">Job Comments
+                        </ion-label>
+                        <svg *ngIf="!blockGroups['Comments'].open" style="margin-left: auto;float: right;" slot="end"
+                             xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                             class="bi bi-chevron-right" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                  d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+                        </svg>
+                        <svg *ngIf="blockGroups['Comments'].open" style="margin-left: auto;float: right;"
+                             xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                             class="bi bi-chevron-down" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                  d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+                        </svg>
+                    </ion-item>
+                    <div [ngClass]="{'section-active': blockGroups['Comments'].open, 'section': !blockGroups['Comments'].open}">
+                        <ion-row padding>
+                            <ion-row class="button-grouping anchor-bottom ion-padding-horizontal">
+                                <ion-grid class="ion-no-padding">
+                                    <ion-row class="ion-align-items-center ion-justify-content-center">
+                                        <ion-col class="padding-left-none" size="9">
+                                            <ion-textarea color="dark" name="newComment" [(ngModel)]="newComment"
+                                                          placeholder="Write a message"></ion-textarea>
+                                        </ion-col>
+                                        <ion-col size="3">
+                                            <ion-button size="large" expand="block" color="tertiary"
+                                                        (click)="sendMessage()">
+                                                <ion-icon name="send"></ion-icon>
+                                            </ion-button>
+                                        </ion-col>
+                                    </ion-row>
+                                </ion-grid>
+                            </ion-row>
+                            <ion-row *ngIf="comments.length > 0">
+                                <div [attr.data-position]="(userinfo.id == comment['userid']) ? 'right': 'left'"
+                                     *ngFor="let comment of comments;">
+                                    <div class="message-container">
+                                        <div id="{{comment['modcommentsid']}}" class="message-bubble ion-padding">
+                                            <div class="ion-text-left"
+                                                 [innerHTML]="comment['commentcontent']"></div>
+                                        </div>
+                                    </div>
+                                    <div class="comment-bottom">
+                                        <ion-label color="dark" position="stacked" class="comment-sent">
+                                            {{comment['createdtime']}}
+                                            <br>
+                                            {{comment['username']}}
+                                        </ion-label>
+                                    </div>
+                                </div>
+                            </ion-row>
+                            <ion-row *ngIf="comments.length == 5">
+                                <ion-col>
+                                    <ion-button (click)="jobComments(workorderdetail.workorderid)" expand="block"
+                                                color="secondary">Load More Comments
+                                    </ion-button>
+                                </ion-col>
+                            </ion-row>
+                            <ion-content class="ion-padding" *ngIf="comments.length == 0">
+                                <p class="ion-padding">No messages</p>
+                            </ion-content>
+                        </ion-row>
+                    </div>
+                </div>
+            </ion-item-group>
+        </ion-list>
+    </form>
+
+</ion-content>

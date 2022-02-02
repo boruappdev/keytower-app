@@ -1,0 +1,31 @@
+<ion-header>
+    <ion-toolbar text-center>
+        <ion-title>All Scope of Work</ion-title>
+        <ion-icon name="close" (click)="closeModal()" size="large" style="float: right;"></ion-icon>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+    <ion-item-group>
+        <ion-item *ngFor="let activity of listofsowactivity" style="padding: 0px 10px;" id="{{activity.activityid}}">
+                <div style="width: 100%;">
+                    <ion-label style="font-size: 19px;white-space: inherit;" class="">{{activity.subject}}
+                    <p>{{activity.jobtitle}}</p>
+                    </ion-label>
+
+                </div>
+                <div style="width: 110px !important; float: right; padding-bottom: 0.7em;">
+                    <div class="button-grouping">
+                        <ion-button (click)="ScopeofWorkstatus(activity.activityid, 'Accept')"
+                                    expand="block" color="primary" >Complete
+                        </ion-button>
+                    </div>
+                    <div class="button-grouping">
+                        <ion-button (click)="ScopeofWorkstatus(activity.activityid, 'Delay')"
+                                    expand="block" color="danger" >Delay
+                        </ion-button>
+                    </div>
+                </div>
+        </ion-item>
+    </ion-item-group>
+</ion-content>

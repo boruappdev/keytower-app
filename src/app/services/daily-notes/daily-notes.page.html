@@ -1,0 +1,196 @@
+<ion-header>
+    <ion-toolbar text-center>
+        <ion-title>Daily Notes</ion-title>
+        <ion-icon name="close" (click)="closeModal()" size="large" style="float: right;"></ion-icon>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+    <ion-item-group>
+        <div *ngFor="let notes of allDailyNotes">
+            <ion-item class="ion-item-nopadding" (click)="toggleSection(notes.noteDate)">
+                <div class="dropdown-arrow" style="display: flex;align-items: center;">
+                    <ion-text>{{notes.noteDate}}</ion-text>
+                    <svg *ngIf="activeSection !== notes.noteDate" style="margin-left: auto;float: right;" slot="end" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+                    </svg>
+                    <svg *ngIf="activeSection === notes.noteDate" style="margin-left: auto;float: right;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-chevron-down" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+                    </svg>
+                </div>
+            </ion-item>
+
+            <ion-card *ngIf="notes.noteDate == curerentDate"
+                      [ngClass]="{'section-active': activeSection === notes.noteDate, 'section': activeSection !== notes.noteDate}">
+                <ion-item>
+                    <ion-label position="stacked">What was completed :</ion-label>
+                    <ion-textarea auto-grow="true"
+                                  placeholder="Type here..."
+                                  rows="3"
+                                  [(ngModel)]="completesText"
+                                  width="100%"></ion-textarea>
+                </ion-item>
+                <ion-item>
+                    <ion-label position="stacked">Any issues :</ion-label>
+                    <ion-textarea auto-grow="true"
+                                  placeholder="Type here..."
+                                  rows="3"
+                                  [(ngModel)]="issueText"
+                                  width="100%"></ion-textarea>
+                </ion-item>
+                <ion-item>
+                    <ion-label position="stacked">What is coming up:</ion-label>
+                    <ion-textarea auto-grow="true"
+                                  placeholder="Type here..."
+                                  rows="3"
+                                  [(ngModel)]="commingupText"
+                                  width="100%"></ion-textarea>
+                </ion-item>
+                <ion-item>
+                    <ion-label position="stacked">Travel (Hrs):</ion-label>
+                    <ion-input type="number"
+                               maxlength="3"
+                               max="999"
+                               placeholder="Type here..."
+                               [(ngModel)]="travelHr"
+                               width="100%"></ion-input>
+                </ion-item>
+                <ion-item>
+                    <ion-label position="stacked">Underground Work (Hrs):</ion-label>
+                    <ion-input type="number"
+                               maxlength="3"
+                               max="999"
+                               placeholder="Type here..."
+                               [(ngModel)]="undergroundWorkHr"
+                               width="100%"></ion-input>
+                </ion-item>
+                <ion-item>
+                    <ion-label position="stacked">Materials / Tools Pick up (Hrs):</ion-label>
+                    <ion-input type="number"
+                               maxlength="3"
+                               max="999"
+                               placeholder="Type here..."
+                               [(ngModel)]="materialHr"
+                               width="100%"></ion-input>
+                </ion-item>
+                <ion-item>
+                    <ion-label position="stacked">Pole installation (Hrs):</ion-label>
+                    <ion-input type="number"
+                               maxlength="3"
+                               max="999"
+                               placeholder="Type here..."
+                               [(ngModel)]="poleInsHr"
+                               width="100%"></ion-input>
+                </ion-item>
+                <ion-item>
+                    <ion-label position="stacked">Radio/ Antenna work (Hrs):</ion-label>
+                    <ion-input type="number"
+                               maxlength="3"
+                               max="999"
+                               placeholder="Type here..."
+                               [(ngModel)]="radioWorkHr"
+                               width="100%"></ion-input>
+                </ion-item>
+                <ion-item>
+                    <ion-label position="stacked">Delays:</ion-label>
+                    <ion-select [(ngModel)]="delays">
+                        <ion-select-option value="">Select Delays</ion-select-option>
+                        <ion-select-option>Material delivery</ion-select-option>
+                        <ion-select-option>Material incomplete or broken</ion-select-option>
+                        <ion-select-option>Equipment missing</ion-select-option>
+                        <ion-select-option>Crew incomplete</ion-select-option>
+                        <ion-select-option>Third party delay/no show up</ion-select-option>
+                        <ion-select-option>Weather</ion-select-option>
+                        <ion-select-option>Emergency (notes required)</ion-select-option>
+                    </ion-select>
+                </ion-item>
+
+                <ion-item>
+                    <ion-label position="stacked">Photos of Unusual Items:</ion-label>
+                    <ion-row>
+                        <ion-col class="col-6 col-md-4 col-xl-3" *ngFor="let curtImg of notes.images">
+                            <ion-thumbnail class="checklist-thumb" (click)="openConDocViewModal(curtImg)"><img
+                                    src="{{this.apiurl.replace('phoneapi/','')}}{{curtImg.image_path}}"></ion-thumbnail>
+                        </ion-col>
+                        <ion-col class="col-6 col-md-4 col-xl-3" style="display: inline-flex;align-items: center;">
+                            <ion-button style="height: 50px;width: 85px;" type="button" class="add-image"
+                                        color="secondary"
+                                        (click)="openActionSheet()">
+                                <ion-icon style="padding: 0px;" size="large" name="add"></ion-icon>
+                                <ion-icon style="padding: 0px;" size="large" name="camera"></ion-icon>
+                            </ion-button>
+                        </ion-col>
+                    </ion-row>
+                </ion-item>
+                <div class="button-grouping ion-padding">
+                    <ion-button (click)="addDailyNotes()" size="large" expand="block" color="primary"
+                                type="submit">
+                        <ion-text>Save</ion-text>
+                    </ion-button>
+                </div>
+            </ion-card>
+
+            <ion-card *ngIf="notes.noteDate != curerentDate"
+                      [ngClass]="{'section-active': activeSection === notes.noteDate, 'section': activeSection !== notes.noteDate}">
+                <ion-item>
+                    <ion-label position="stacked">What was completed :</ion-label>
+                    <ion-textarea auto-grow="true"
+                                  [(ngModel)]="notes.completesText"
+                                  width="100%" readonly></ion-textarea>
+                </ion-item>
+                <ion-item>
+                    <ion-label position="stacked">Any issues :</ion-label>
+                    <ion-textarea auto-grow="true"
+                                  [(ngModel)]="notes.issueText"
+                                  width="100%" readonly></ion-textarea>
+                </ion-item>
+                <ion-item>
+                    <ion-label position="stacked">What is coming up:</ion-label>
+                    <ion-textarea auto-grow="true"
+                                  [(ngModel)]="notes.commingupText"
+                                  width="100%" readonly></ion-textarea>
+                </ion-item>
+                <ion-item>
+                    <ion-label position="stacked">Travel (Hrs):</ion-label>
+                    <ion-input [(ngModel)]="notes.travelHr"
+                               width="100%" readonly></ion-input>
+                </ion-item>
+                <ion-item>
+                    <ion-label position="stacked">Underground Work (Hrs):</ion-label>
+                    <ion-input [(ngModel)]="notes.undergroundWorkHr"
+                               width="100%" readonly></ion-input>
+                </ion-item>
+                <ion-item>
+                    <ion-label position="stacked">Materials / Tools Pick up (Hrs):</ion-label>
+                    <ion-input [(ngModel)]="notes.materialHr"
+                               width="100%" readonly></ion-input>
+                </ion-item>
+                <ion-item>
+                    <ion-label position="stacked">Pole installation (Hrs):</ion-label>
+                    <ion-input [(ngModel)]="notes.poleInsHr"
+                               width="100%" readonly></ion-input>
+                </ion-item>
+                <ion-item>
+                    <ion-label position="stacked">Radio/ Antenna work (Hrs):</ion-label>
+                    <ion-input [(ngModel)]="notes.radioWorkHr"
+                               width="100%" readonly></ion-input>
+                </ion-item>
+                <ion-item>
+                    <ion-label position="stacked">Delays:</ion-label>
+                    <ion-input [(ngModel)]="notes.delays"
+                               width="100%" readonly></ion-input>
+                </ion-item>
+
+                <ion-item>
+                    <ion-label position="stacked">Photos of Unusual Items:</ion-label>
+                    <ion-row>
+                        <ion-col class="col-6 col-md-4 col-xl-3" *ngFor="let nimage of notes.images">
+                            <ion-thumbnail class="checklist-thumb" (click)="openConDocViewModal(nimage)"><img
+                                    src="{{this.apiurl.replace('phoneapi/','')}}{{nimage.imgpath}}"></ion-thumbnail>
+                        </ion-col>
+                    </ion-row>
+                </ion-item>
+            </ion-card>
+        </div>
+    </ion-item-group>
+</ion-content>

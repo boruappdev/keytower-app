@@ -1,0 +1,17 @@
+{
+  "/api/*": {
+    "target": "http://devl06.borugroup.com",
+    "secure": false,
+    "logLevel": "debug"
+  },
+  {
+    "target": "http://localhost",
+    "secure": false,
+    "logLevel": "debug"
+  },
+  {
+  "target": "http://192.241.134.167",
+  "secure": false,
+  "logLevel": "debug"
+  }
+}
